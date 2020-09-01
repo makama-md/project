@@ -35,12 +35,14 @@ if __name__ == "__main__":
     opt = tf.keras.optimizers.Adam(lr)
     metrics = ["acc", tf.keras.metrics.Recall(), tf.keras.metrics.Precision(), iou]
     model.compile(loss="binary_crossentropy", optimizer=opt, metrics=metrics)
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir="./logs")
 
+    
     callbacks = [
         ModelCheckpoint("files/model.h5"),
         ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=4),
         CSVLogger("files/data.csv"),
-        TensorBoard(),
+        tensorboard_callback,
         EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=False)
     ]
 
