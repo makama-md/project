@@ -9,14 +9,13 @@ from data import load_data, tf_dataset
 from train import iou
 
 def read_image(path):
-    x = cv2.imread(path, cv2.IMREAD_COLOR)
-    x = cv2.resize(x, (256, 256))
+    x = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
     x = x/255.0
+    x = np.expand_dims(x, axis=-1)
     return x
 
 def read_mask(path):
     x = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-    x = cv2.resize(x, (256, 256))
     x = np.expand_dims(x, axis=-1)
     return x
 
@@ -27,9 +26,9 @@ def mask_parse(mask):
     return mask
 
 if __name__ == "__main__":
-    ## Dataset
+    # Dataset
     path = "CVC-612/"
-    batch_size = 8
+    batch_size = 32
     (train_x, train_y), (valid_x, valid_y), (test_x, test_y) = load_data(path)
 
     test_dataset = tf_dataset(test_x, test_y, batch=batch_size)

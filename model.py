@@ -15,9 +15,10 @@ def conv_block(x, num_filters):
     return x
 
 def build_model():
-    size = 256
-    num_filters = [16, 32, 48, 64]
-    inputs = Input((size, size, 3))
+    size = 128
+    num_filters = [64, 128, 256, 512]
+    inputs = Input((size, size, 1))
+    print(f"the shape of the input images is, {inputs.shape}")
 
     skip_x = []
     x = inputs
@@ -42,7 +43,7 @@ def build_model():
     ## Output
     x = Conv2D(1, (1, 1), padding="same")(x)
     x = Activation("sigmoid")(x)
-
+    print(f"the shape of x at the end of the network, {x}")
     return Model(inputs, x)
 
 
