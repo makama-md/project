@@ -2,7 +2,7 @@ import os
 from shutil import copyfile
 import random
 
-root_dir = 'CVC-612/'
+root_dir = "CVC-612/"
 images = 'images/'
 masks = 'masks/'
 
@@ -10,7 +10,7 @@ count = 0
 total = 15096
 
 
-Real_val = 0.1
+Real_val = 0.3
 
 TRAIN_PER = 0.8
 VAL_PER = 0.1
@@ -25,7 +25,7 @@ shuffle = False
 
 for subdir, dirs, files in os.walk(root_dir+images):
     if shuffle:
-        random.shuffle(file)
+        random.shuffle(files)
     for file in sorted(files):
         if '.png' in file:
             count += 1

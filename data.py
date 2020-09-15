@@ -14,6 +14,11 @@ def load_data(path):
     valid_x, valid_y = glob(os.path.join(path, "val/images/*")), glob(os.path.join(path, "val/masks/*"))
     test_x, test_y  = glob(os.path.join(path, "test/images/*")), glob(os.path.join(path, "test/masks/*"))
 
+    print(f"the images sample is {len(train_x)}")
+    print(f"the masks sample is {len(train_y)}")
+    print(f"the val sample is {len(valid_x)}")
+    print(f"the test sample is {len(test_x)}")
+
     return (train_x, train_y), (valid_x, valid_y), (test_x, test_y)
 
 
@@ -47,7 +52,7 @@ def tf_parse(x, y):
     y.set_shape([128, 128, 1])
     return x, y
 
-def tf_dataset(x, y, batch=8):
+def tf_dataset(x, y, batch=32):
     dataset = tf.data.Dataset.from_tensor_slices((x, y))
     dataset = dataset.map(tf_parse)
     dataset = dataset.batch(batch)

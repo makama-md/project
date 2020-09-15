@@ -4,9 +4,14 @@ import cv2
 from glob import glob
 import keras
 import tensorflow as tf
+# from sklearn.metrics import f1_score
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau, CSVLogger, TensorBoard
 from data import load_data, tf_dataset
+from keras.preprocessing.image import ImageDataGenerator
 from model import build_model
+from keras import backend as K
+
+
 
 
 def iou(y_true, y_pred):
@@ -19,56 +24,61 @@ def iou(y_true, y_pred):
 
     return tf.numpy_function(f, [y_true, y_pred], tf.float64)
 
-# # def get_train_generator(train_x, train_y, batch=8):
-# #     print("getting train generator...")
-# #     # normalize and augment images
-#
-# image_generator = ImageDataGenerator(
-#     shear_range=0.2,
-#     horizontal_flip=True,
-#     width_shift_range=0.2,
-#     height_shift_range=0.2,
-#     zoom_range=0.2
-#     )
-#
-# #     generator = image_generator.flow(
-# #         train_x,
-# #         train_y,
-# #         batch_size=batch
-# #         )
-# #
-# #     return generator
 
-#
-# def tf_dataset(x, y, batch=8):
-#     dataset = tf.data.Dataset.from_tensor_slices((x, y))
-#     dataset = dataset.map(image_generator)
-#     dataset = dataset.map(tf_parse)
-#     dataset = dataset.batch(batch)
-#     dataset = dataset.repeat()
-#     return dataset
+def f1(y_true, y_pred):
+    def recall(y_true, y_pred):
+        """Recall metric.
+
+        Only computes a batch-wise average of recall.
+
+        Computes the recall, a metric for multi-label classification of
+        how many relevant items are selected.
+        """
+        true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+        possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+        recall = true_positives / (possible_positives + K.epsilon())
+        return recall
+
+    def precision(y_true, y_pred):
+        """Precision metric.
+
+        Only computes a batch-wise average of precision.
+
+        Computes the precision, a metric for multi-label classification of
+        how many selected items are relevant.
+        """
+        true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+        predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+        precision = true_positives / (predicted_positives + K.epsilon())
+        return precision
+    precision = precision(y_true, y_pred)
+    recall = recall(y_true, y_pred)
+    return 2*((precision*recall)/(precision+recall+K.epsilon()))
+
+
+
+
 
 
 
 if __name__ == "__main__":
     ## Dataset
-    path = "CVC-612/"
+    path = "new/train/"
     (train_x, train_y), (valid_x, valid_y), (test_x, test_y) = load_data(path)
 
 
     ## Hyperparameters
-    batch = 8
+    batch = 32
     lr = 1e-4
-    epochs = 1
+    epochs = 20
 
-    # train_dataset = get_train_generator(train_x, train_y, batch=batch)
     train_dataset = tf_dataset(train_x, train_y, batch=batch)
     valid_dataset = tf_dataset(valid_x, valid_y, batch=batch)
 
     model = build_model()
 
     opt = tf.keras.optimizers.Adam(lr)
-    metrics = ["acc", tf.keras.metrics.Recall(), tf.keras.metrics.Precision(), iou]
+    metrics = ["acc", tf.keras.metrics.Recall(), tf.keras.metrics.Precision(), f1, iou]
     model.compile(loss="binary_crossentropy", optimizer=opt, metrics=metrics)
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir="./logs")
 
