@@ -63,7 +63,7 @@ def f1(y_true, y_pred):
 
 if __name__ == "__main__":
     ## Dataset
-    path = "new/train/"
+    path = "new"
     (train_x, train_y), (valid_x, valid_y), (test_x, test_y) = load_data(path)
 
 

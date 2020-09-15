@@ -30,7 +30,7 @@ def mask_parse(mask):
 
 if __name__ == "__main__":
     # Dataset
-    path = "CVC-612/test/"
+    path = "new"
     batch_size = 32
     (train_x, train_y), (valid_x, valid_y), (test_x, test_y) = load_data(path)
 

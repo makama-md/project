@@ -2,7 +2,7 @@ import os
 from shutil import copyfile
 import random
 
-root_dir = "CVC-612/"
+root_dir = "data/"
 images = 'images/'
 masks = 'masks/'
 
