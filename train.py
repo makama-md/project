@@ -10,6 +10,8 @@ from data import load_data, tf_dataset
 from keras.preprocessing.image import ImageDataGenerator
 from model import build_model
 from keras import backend as K
+import tensorflowjs as tfjs
+
 
 
 
@@ -104,3 +106,5 @@ if __name__ == "__main__":
               steps_per_epoch=train_steps,
               validation_steps=valid_steps,
               callbacks=callbacks)
+    tfjs.converters.save_keras_model(model, "files")
+
